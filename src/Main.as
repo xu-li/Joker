@@ -7,8 +7,11 @@
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Timer;
+	import xu.li.joker.core.IsoScene;
 	import xu.li.joker.core.ITexture;
 	import xu.li.joker.textures.ColorTexture;
 	import xu.li.joker.textures.TextureList;
@@ -20,9 +23,8 @@
 	[SWF("width=800, height=600")]
 	public class Main extends Sprite 
 	{
-		private var _debugSprite:Sprite;
-		private var _texture:TextureList;
-		private var _bitmapData:BitmapData;
+		private var _scene:IsoScene;
+		private var _timer:Timer;
 		
 		public function Main():void 
 		{
@@ -35,55 +37,19 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 			
+			_timer = new Timer(1 / 60);
 			
+			_scene = new IsoScene(stage.stageWidth, stage.stageHeight);
 			
-			_bitmapData = new BitmapData(800, 600, false, 0);
-			var bitmap:Bitmap = new Bitmap(_bitmapData);
-			addChild(bitmap);
-			
-			
-			_texture = new TextureList();
-			_texture.setPosition(100, 100);
-			var colorTexture1:ColorTexture = new ColorTexture(0xff0000, 32, 32);
-			colorTexture1.setPosition(50, 50);
-			_texture.addTexture(colorTexture1);
-			
-			
-			var colorTexture2:ColorTexture = new ColorTexture(0xff0000, 32, 32);
-			//colorTexture.setPosition( -50, -50);
-			_texture.addTexture(colorTexture2);
-			
-			_texture.render(_bitmapData, 0, 0);
-			
-			
-			_debugSprite = new Sprite();
-			addChild(_debugSprite);
-			
-			debug(_debugSprite.graphics, _texture, 0, 0);
-			
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			addChild(_scene.getContainer());
+		
+			_timer.addEventListener(TimerEvent.TIMER, onTimer);
+			_timer.start();
 		}
 		
-		private function onMouseMove(e:MouseEvent):void 
+		private function onTimer(e:TimerEvent):void 
 		{
-			var texture:ITexture = null;
-			if (_texture.isHit(e.localX - 100, e.localY - 100))
-			{
-				for each (texture in _texture.getTextures())
-				{
-					ColorTexture(texture).setColor(0x0000ff);
-				}
-			}
-			else
-			{
-				for each (texture in _texture.getTextures())
-				{
-					ColorTexture(texture).setColor(0xff0000);
-				}
-			}
-			
-			_bitmapData.floodFill(0, 0, 0);
-			_texture.render(_bitmapData, 0, 0);
+			_scene.render(1 / 60);
 		}
 		
 		/**

@@ -12,6 +12,8 @@ package xu.li.joker.core
 		private var _firstSprite:IsoSprite;
 		private var _lastSprite:IsoSprite;
 		
+		private var _visible:Boolean;
+		
 		
 		public function IsoLayer() 
 		{
