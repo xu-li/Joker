@@ -13,6 +13,9 @@ package xu.li.joker.textures
 	public class ColorTexture extends Texture implements ITexture
 	{
 		private var _color:uint;
+		private var _width:int;
+		private var _height:int;
+		
 		/**
 		 * Constructor
 		 * 
@@ -24,9 +27,10 @@ package xu.li.joker.textures
 		{
 			super();
 			
-			_color = color;
-			_bounds.width = width;
-			_bounds.height = height;
+			_width = width;
+			_height = height;
+			
+			setColor(color);
 		}
 		
 		/**
@@ -41,13 +45,22 @@ package xu.li.joker.textures
 		/**
 		 * @inheritDoc
 		 */
-		override public function render(target:BitmapData, x:int = 0, y:int = 0):void
+		override public function render(target:BitmapData, originX:int = 0, originY:int = 0):void
 		{
-			_bounds.x += x;
-			_bounds.y += y;
-			target.fillRect(_bounds, _color);
-			_bounds.x -= x;
-			_bounds.y -= y;
+			_tempRect.x = originX + _x;
+			_tempRect.y = originY + _y;
+			_tempRect.width = _width;
+			_tempRect.height = _height;
+			
+			target.fillRect(_tempRect, _color);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		override public function isHit(x:int = 0, y:int = 0):Boolean 
+		{
+			return x >= _x && x < _x + _width && y >= _y && y < _y + _height;
 		}
 	}
 

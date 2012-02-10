@@ -91,22 +91,14 @@ package xu.li.joker.core
 		
 		/**
 		 * Render the scene
-		 * 
-		 * @param	timeElapsed
 		 */
-		public function render(timeElapsed:Number):void
+		public function render():void
 		{
 			// @TODO render based on the dirty flag.
 			
 			beforeRender();
 			
-			if (_layers)
-			{
-				for (var i:int = 0, l:int = _layers.length; i < l; ++i)
-				{
-					_layers[i].render(_buffer, _viewport);
-				}
-			}
+			renderLayers();
 			
 			afterRender();
 		}
@@ -118,7 +110,22 @@ package xu.li.joker.core
 		{
 			_buffer.lock();
 			
-			_buffer.floodFill(0, 0, _backgroundColor);
+			//_buffer.floodFill(0, 0, _backgroundColor);
+			_buffer.fillRect(_buffer.rect, _backgroundColor);
+		}
+		
+		/**
+		 * Render the layers
+		 */
+		protected function renderLayers():void
+		{
+			if (_layers)
+			{
+				for (var i:int = 0, l:int = _layers.length; i < l; ++i)
+				{
+					_layers[i].render(_buffer, _viewport);
+				}
+			}
 		}
 		
 		/**
@@ -196,9 +203,90 @@ package xu.li.joker.core
 		// Interaction
 		///////////////////////////////////////////////////////
 		
+		/**
+		 * Get the sprite at local position (x, y), relative to the view port
+		 * @param	x
+		 * @param	y
+		 * @return
+		 */
 		public function getSpriteAt(x:int = 0, y:int = 0):IsoSprite
 		{
+			if (_layers)
+			{
+				var i:int = _layers.length - 1;
+				
+				while (i >= 0)
+				{
+					var sprite:IsoSprite = _layers[i].getSpriteAt(x + _viewport.x, y + _viewport.y);
+					if (sprite)
+					{
+						return sprite;
+					}
+					i--;
+				}
+			}
+			
 			return null;
 		}
+		
+		///////////////////////////////////////////////////////
+		// Tile
+		///////////////////////////////////////////////////////
+		
+		// width of a tile in 2d space
+		private static var _tileWidth:int = 0;
+		
+		// height of a tile in 2d space
+		private static var _tileHeight:int = 0;
+		
+		// size of a tile in isometric space, (width equals height)
+		private static var _isoTileSize:int = 0;
+		
+		/**
+		 * Set the tile size in isometric space
+		 * @param	isoTileSize
+		 */
+		public static function setTileSize(isoTileSize:int):void
+		{
+			_isoTileSize = isoTileSize;
+			_tileHeight = isoTileSize;
+			_tileWidth = isoTileSize * 2;
+		}
+		
+		/**
+		 * Get the tile width in 2d space
+		 * @return
+		 */
+		public static function getTileWidth():int
+		{
+			return _tileWidth;
+		}
+		
+		/**
+		 * Get the tile height in 2d space
+		 * @return
+		 */
+		public static function getTileHeight():int
+		{
+			return _tileHeight;
+		}
+		
+		/**
+		 * Get the tile size in isometric space
+		 * @return
+		 */
+		public static function getTileSize():int
+		{
+			return _isoTileSize;
+		}
+		
+		// default the iso tile width to 50
+		{
+			IsoScene.setTileSize(50);
+		}
+		
+		///////////////////////////////////////////////////////
+		// Coordinates transform
+		///////////////////////////////////////////////////////
 	}
 }

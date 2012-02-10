@@ -17,33 +17,10 @@ package xu.li.joker.core
 		 * Render this texture
 		 * 
 		 * @param	target The target bitmapdata to be rendered at.
-		 * @param	x The x coordinate in the target space
-		 * @param	y The y coordinate in the target space
+		 * @param	originX The origin point of this texture, in target's coordinate space
+		 * @param	originY The origin point of this texture, in target's coordinate space
 		 */
-		function render(target:BitmapData, x:int = 0, y:int = 0):void;
-		
-		/**
-		 * Set the position
-		 * 
-		 * @param	x
-		 * @param	y
-		 */
-		function setPosition(x:int = 0, y:int = 0):void;
-		
-		/**
-		 * Get the position
-		 * @param	point The point object to be filled with data
-		 * @return
-		 */
-		function getPosition(point:Point = null):Point;
-		
-		/**
-		 * Get the bounds of this texture in local coordinates,
-		 * taking offset into consideration.
-		 * 
-		 * @return
-		 */
-		function getBounds():Rectangle;
+		function render(target:BitmapData, originX:int = 0, originY:int = 0):void;
 		
 		/**
 		 * Check if there is an opaque pixel at coordinate (x, y).

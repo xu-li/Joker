@@ -22,6 +22,10 @@ package xu.li.joker.textures
 			_list = new Vector.<ITexture>();
 		}
 		
+		///////////////////////////////////////////////////////
+		// Child Texture
+		///////////////////////////////////////////////////////
+		
 		/**
 		 * Add the texture
 		 * @param	texture
@@ -37,11 +41,6 @@ package xu.li.joker.textures
 			}
 			
 			_list.splice(index, 0, texture);
-			
-			if (oldIndex < 0)
-			{
-				calculateBounds();
-			}
 		}
 		
 		/**
@@ -54,7 +53,6 @@ package xu.li.joker.textures
 			if (index >= 0)
 			{
 				_list.splice(index, 1);
-				calculateBounds();
 			}
 		}
 		
@@ -77,37 +75,21 @@ package xu.li.joker.textures
 			return _list;
 		}
 		
-		/**
-		 * Recalculate the bounds
-		 */
-		protected function calculateBounds():void
-		{
-			_bounds.setEmpty();
-			
-			for (var i:int = 0, l:int = _list.length; i < l; ++i)
-			{
-				_bounds = _bounds.union(_list[i].getBounds());
-			}
-			
-			_bounds.x += _x;
-			_bounds.y += _y;
-		}
-		
 		///////////////////////////////////////////////////////
-		// Implementation
+		// ITexture Implementation
 		///////////////////////////////////////////////////////
 		
 		/**
 		 * @inheritDoc
 		 */
-		override public function render(target:BitmapData, x:int = 0, y:int = 0):void 
+		override public function render(target:BitmapData, originX:int = 0, originY:int = 0):void
 		{
-			x += _x;
-			y += _y;
+			originX += _x;
+			originY += _y;
 			
 			for (var i:int = 0, l:int = _list.length; i < l; ++i)
 			{
-				_list[i].render(target, x, y);
+				_list[i].render(target, originX, originY);
 			}
 		}
 		
@@ -116,20 +98,20 @@ package xu.li.joker.textures
 		 */
 		override public function isHit(x:int = 0, y:int = 0):Boolean 
 		{
-			if (super.isHit(x, y))
-			{
-				x -= _x;
-				y -= _y;
-				
-				for (var i:int = 0, l:int = _list.length; i < l; ++i)
-				{
-					if (_list[i].isHit(x, y))
-					{
-						return true;
-					}
-				}
-			}
+			x -= _x;
+			y -= _y;
 			
+			var i:int = _list.length - 1;
+			while (i >= 0)
+			{
+				if (_list[i].isHit(x, y))
+				{
+					return true;
+				}
+				
+				i--;
+			}
+		
 			return false;
 		}
 	}
