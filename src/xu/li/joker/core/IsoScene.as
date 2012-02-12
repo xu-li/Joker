@@ -23,6 +23,8 @@ package xu.li.joker.core
 		 */
 		public function IsoScene(width:int, height:int, backgroundColor:uint = 0) 
 		{
+			_layers = new Vector.<IsoLayer>();
+			
 			_container = new Bitmap();
 			_viewport = new Rectangle();
 			_backgroundColor = backgroundColor;
@@ -61,11 +63,6 @@ package xu.li.joker.core
 		 */
 		public function addLayer(layer:IsoLayer):void
 		{
-			if (!_layers)
-			{
-				_layers = new Vector.<IsoLayer>();
-			}
-			
 			_layers.push(layer);
 		}
 		
@@ -75,10 +72,7 @@ package xu.li.joker.core
 		 */
 		public function removeLayer(layer:IsoLayer):void
 		{
-			if (_layers)
-			{
-				_layers.splice(_layers.indexOf(layer), 1);
-			}
+			_layers.splice(_layers.indexOf(layer), 1);
 		}
 		
 		///////////////////////////////////////////////////////
@@ -119,12 +113,9 @@ package xu.li.joker.core
 		 */
 		protected function renderLayers():void
 		{
-			if (_layers)
+			for (var i:int = 0, l:int = _layers.length; i < l; ++i)
 			{
-				for (var i:int = 0, l:int = _layers.length; i < l; ++i)
-				{
-					_layers[i].render(_buffer, _viewport);
-				}
+				_layers[i].render(_buffer, _viewport);
 			}
 		}
 		
@@ -211,19 +202,16 @@ package xu.li.joker.core
 		 */
 		public function getSpriteAt(x:int = 0, y:int = 0):IsoSprite
 		{
-			if (_layers)
+			var i:int = _layers.length - 1;
+			
+			while (i >= 0)
 			{
-				var i:int = _layers.length - 1;
-				
-				while (i >= 0)
+				var sprite:IsoSprite = _layers[i].getSpriteAt(x + _viewport.x, y + _viewport.y);
+				if (sprite)
 				{
-					var sprite:IsoSprite = _layers[i].getSpriteAt(x + _viewport.x, y + _viewport.y);
-					if (sprite)
-					{
-						return sprite;
-					}
-					i--;
+					return sprite;
 				}
+				i--;
 			}
 			
 			return null;
@@ -288,5 +276,25 @@ package xu.li.joker.core
 		///////////////////////////////////////////////////////
 		// Coordinates transform
 		///////////////////////////////////////////////////////
+		
+		/**
+		 * Convert isometric value to tile
+		 * @param	isoValue
+		 * @return
+		 */
+		public static function isoToTile(isoValue:int):int
+		{
+			return int(isoValue / _isoTileSize);
+		}
+		
+		/**
+		 * Convert tile value to isometric
+		 * @param	tileValue
+		 * @return
+		 */
+		public static function tileToIso(tileValue:int):int
+		{
+			return tileValue * _isoTileSize;
+		}
 	}
 }

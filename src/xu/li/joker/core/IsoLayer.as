@@ -9,10 +9,9 @@ package xu.li.joker.core
 	 */
 	public class IsoLayer
 	{
-		public static const FLAG_DEPTH_DIRTY:int = 1;
-		
-		// whether this layer should handle the mouse events
-		private var _interactable:Boolean = true;
+		public static const FLAG_VISIBILITY:int   = 1;
+		public static const FLAG_INTERACTABLE:int = 2;
+		public static const FLAG_DEPTH_DIRTY:int  = 4;
 		
 		/**
 		 * Constructor
@@ -21,8 +20,8 @@ package xu.li.joker.core
 		 */
 		public function IsoLayer(interactable:Boolean = false) 
 		{
-			_visible = true;
-			_interactable = interactable;
+			setFlag(FLAG_VISIBILITY, true);
+			setFlag(FLAG_INTERACTABLE, interactable);
 		}
 		
 		///////////////////////////////////////////////////////
@@ -124,9 +123,27 @@ package xu.li.joker.core
 		 */
 		public function depthSort():void
 		{
-			// @TODO sort the layer by using the depth dirty flag
-			
-			// do nothing
+			if (getFlag(FLAG_DEPTH_DIRTY))
+			{
+				
+				
+				
+				setFlag(FLAG_DEPTH_DIRTY, false);
+			}
+		}
+		
+		/**
+		 * Compare the depth
+		 * 
+		 * @param	isoSpriteA
+		 * @param	isoSpriteB
+		 * @return 1 if isoSpriteA is behind isoSpriteB, -1 otherwise
+		 */
+		protected function compareDepth(isoSpriteA:IsoSprite, isoSpriteB:IsoSprite):int
+		{
+			return isoSpriteA.getTileX() <= isoSpriteB.getTileX() + isoSpriteB.getTileWidth()
+				&& isoSpriteA.getTileY() <= isoSpriteB.getTileY() + isoSpriteB.getTileHeight()
+				? 1 : -1;
 		}
 		
 		///////////////////////////////////////////////////////
@@ -141,7 +158,7 @@ package xu.li.joker.core
 		 */
 		public function render(target:BitmapData, viewport:Rectangle):void
 		{
-			if (_visible)
+			if (getFlag(FLAG_VISIBILITY))
 			{
 				beforeRender();
 				
@@ -186,27 +203,35 @@ package xu.li.joker.core
 		}
 		
 		///////////////////////////////////////////////////////
-		// Visibility
+		// Flags
 		///////////////////////////////////////////////////////
-		
-		private var _visible:Boolean;
+
+		/**
+		 * Flags
+		 * @see IsoLayer::FLAG_VISIBILITY
+		 * @see IsoLayer::FLAG_INTERACTABLE
+		 * @see IsoLayer::FLAG_DEPTH_DIRTY
+		 */
+		private var _flags:int = 0;
 		
 		/**
-		 * Set the visibility of this iso sprite
-		 * @param	visible
+		 * Set the flag
+		 * @param	flag
+		 * @param	value
 		 */
-		public function setVisible(visible:Boolean):void
+		public function setFlag(flag:int, value:Boolean = true):void
 		{
-			_visible = visible;
+			_flags = value ? _flags | flag : _flags & ~flag;
 		}
 		
 		/**
-		 * Check the visibility of this iso sprite
+		 * Get the flag
+		 * @param	flag
 		 * @return
 		 */
-		public function isVisible():Boolean
+		public function getFlag(flag:int):Boolean 
 		{
-			return _visible;
+			return (_flags & flag) == flag;
 		}
 		
 		///////////////////////////////////////////////////////
@@ -221,7 +246,7 @@ package xu.li.joker.core
 		 */
 		public function getSpriteAt(x:int = 0, y:int = 0):IsoSprite
 		{
-			if (!_interactable)
+			if (!getFlag(FLAG_VISIBILITY | FLAG_INTERACTABLE))
 			{
 				return null;
 			}

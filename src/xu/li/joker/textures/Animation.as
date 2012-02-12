@@ -60,7 +60,7 @@ package xu.li.joker.textures
 					
 					if (!_onCompleteFunctionCalled && _onComplete is Function)
 					{
-						_onComplete.call();
+						_onComplete.call(null, this);
 						
 						_onCompleteFunctionCalled = true;
 					}

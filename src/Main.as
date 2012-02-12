@@ -22,6 +22,7 @@
 	import xu.li.joker.textures.Animation;
 	import xu.li.joker.textures.ColorTexture;
 	import xu.li.joker.textures.FrameTexture;
+	import xu.li.joker.textures.IsoTileMap;
 	import xu.li.joker.textures.TextureList;
 	
 	/**
@@ -62,18 +63,29 @@
 			_timer = new Timer(1 / 60);
 			
 			_scene = new IsoScene(stage.stageWidth, stage.stageHeight);
+			
+			// background layer
+			var backgroundLayer:IsoLayer = new IsoLayer();
+			var isoTileMapSprite:IsoSprite = new IsoSprite();
+			var isoTileMapTexture:IsoTileMap = new IsoTileMap(Vector.<ITexture>([_tile1RedTile, _tile1WhiteTile]), 10, 10);
+			isoTileMapTexture.setTile(1, 0, 0, 10, 10);
+			isoTileMapSprite.setTexture(isoTileMapTexture);
+			backgroundLayer.addSprite(isoTileMapSprite);
+			_scene.addLayer(backgroundLayer);
+			
+			// Normal layer
 			_layer = new IsoLayer(true);
 			
-			_animation = new Animation(1, true);
-			_animation.addTexture(_tile1RedTile);
-			_animation.addTexture(_tile1WhiteTile);
+			//_animation = new Animation(1, true);
+			//_animation.addTexture(_tile1RedTile);
+			//_animation.addTexture(_tile1WhiteTile);
 			
 			
-			_sprite = new IsoSprite();
-			_sprite.setPosition(100, 0);
-			_texture = new ColorTexture(0xff0000, 100, 100);
-			_sprite.setTexture(_animation);
-			_layer.addSprite(_sprite);
+			//_sprite = new IsoSprite();
+			//_sprite.setPosition(100, 0);
+			//_texture = new ColorTexture(0xff0000, 100, 100);
+			//_sprite.setTexture(_animation);
+			//_layer.addSprite(_sprite);
 			
 			//for (var i:int = 0; i < 10; ++i)
 			//{
@@ -162,7 +174,7 @@
 		
 		private function onTimer(e:TimerEvent):void 
 		{
-			_animation.update(1 / 30);
+			//_animation.update(1 / 30);
 			_scene.render();
 		}
 	}

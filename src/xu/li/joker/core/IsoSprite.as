@@ -10,9 +10,6 @@ package xu.li.joker.core
 	 */
 	public class IsoSprite
 	{
-		public static const FLAG_POSITION_DIRTY:int = 1;
-		public static const FLAG_SIZE_DIRTY:int     = 2;
-		
 		// the previous iso sprite
 		internal var prev:IsoSprite;
 		// the next iso sprite
@@ -20,14 +17,19 @@ package xu.li.joker.core
 		
 		/**
 		 * Constructor
+		 * 
+		 * @param	tileWidth
+		 * @param	tileHeight
 		 */
-		public function IsoSprite() 
+		public function IsoSprite(tileWidth:int = 1, tileHeight:int = 1) 
 		{
+			_tileWidth = tileWidth;
+			_tileHeight = tileHeight;
 			_visible = true;
 		}
 		
 		///////////////////////////////////////////////////////
-		// Position
+		// Position & Size
 		///////////////////////////////////////////////////////
 		
 		private var _x:int;
@@ -36,6 +38,8 @@ package xu.li.joker.core
 		private var _isoY:int;
 		private var _tileX:int;
 		private var _tileY:int;
+		private var _tileWidth:int;
+		private var _tileHeight:int;
 		private var _isoWidth:int;
 		private var _isoHeight:int;
 		
@@ -46,6 +50,22 @@ package xu.li.joker.core
 		 */
 		public function setPosition(x:int, y:int):void
 		{
+			if (x == _x && y == _y)
+			{
+				return ;
+			}
+			
+			var newTileX:int = IsoScene.isoToTile(x);
+			var newTileY:int = IsoScene.isoToTile(y);
+			// tile changed, depth is dirty now.
+			if (newTileX != _tileX || newTileY != _tileY)
+			{
+				//_layer.setFlag(IsoLayer.FLAG_DEPTH_DIRTY);
+				
+				_tileX = newTileX;
+				_tileY = newTileY;
+			}
+			
 			_isoX = x;
 			_isoY = y;
 			_point.x = x;
@@ -89,6 +109,42 @@ package xu.li.joker.core
 		public function getIsoY():int
 		{
 			return _isoY;
+		}
+		
+		/**
+		 * Get the position at tileX (world coordinate)
+		 * @return
+		 */
+		public function getTileX():int
+		{
+			return _tileX;
+		}
+		
+		/**
+		 * Get the position at tileY (world coordinate)
+		 * @return
+		 */
+		public function getTileY():int
+		{
+			return _tileY;
+		}
+		
+		/**
+		 * Get the tile width
+		 * @return
+		 */
+		public function getTileWidth():int
+		{
+			return _tileWidth;
+		}
+		
+		/**
+		 * Get the tile height
+		 * @return
+		 */
+		public function getTileHeight():int
+		{
+			return _tileHeight;
 		}
 		
 		
